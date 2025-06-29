@@ -1,0 +1,325 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: sans-serif;
+}
+
+body {
+  background-color: bisque;
+}
+
+header {
+  background-color: rgb(146, 97, 82);
+  padding: 25px;
+  color: white;
+  font-size: 17px;
+  font-weight: bold;
+}
+
+.Container {
+  padding: 40px 20px;
+  background-color: bisque;
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.Container h1 {
+  font-size: 35px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.Container p {
+  font-size: 16px;
+  margin-bottom: 30px;
+  color: #555;
+}
+
+.Card {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 50px;
+}
+
+.cars {
+  margin-top: 20px;
+  width: 240px;
+  background-color: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.427);
+  transition: transform 0.3s ease;
+}
+
+.cars:hover {
+  transform: translateY(-5px);
+}
+
+.gbr-cars {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.cars h2 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: #2d2d2d;
+}
+
+.cars p {
+  font-size: 15px;
+  margin-bottom: 5px;
+  color: #444;
+}
+
+.kotak-komentar {
+  background-color: #f3f3f3;
+  border: 1px solid #ccc;
+  padding: 8px 10px;
+  border-radius: 6px;
+  margin-top: 10px;
+  font-style: italic;
+  font-size: 14px;
+  color: #555;
+}
+
+.btn-card {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.btn {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+}
+
+.info {
+  background-color: #936a46;
+  color: white;
+}
+
+.komen {
+  background-color: #000000c9;
+  color: white;
+}
+
+.add {
+  background-color: #2b70ac;
+  color: white;
+  width: 100%;
+  justify-content: center;
+}
+
+.suka-icon {
+  text-align: right;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.keranjang {
+  position: fixed;
+  top: 30px;
+  right: 20px;
+  z-index: 1000;
+  background-color: white;
+  padding: 10px;
+  border-radius: 50%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+}
+
+.jumlah-keranjang {
+  background: red;
+  color: white;
+  font-size: 13px;
+  padding: 2px 6px;
+  border-radius: 50%;
+  margin-left: 3px;
+}
+
+.popup {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.65);
+  z-index: 999;
+  inset: 0;
+}
+
+.popup-content {
+  background: white;
+  padding: 20px 25px;
+  border-radius: 16px;
+  text-align: center;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+.popup-img {
+  width: 100%;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+.popup-content h3 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.popup-content p {
+  margin: 6px 0;
+  font-size: 16px;
+  color: #555;
+}
+
+.popup-content button {
+  margin-top: 15px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  background-color: #936a46;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.popup-content button:hover {
+  background-color: #7b5636;
+}
+
+.popup-content textarea {
+  width: 90%;
+  height: 100px;
+  margin-top: 12px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  resize: vertical;
+}
+
+.btn-popup-komen {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+footer {
+  background-color: rgb(146, 97, 82);
+  color: white;
+  text-align: center;
+  padding: 40px 20px;
+  font-size: 17px;
+  box-shadow: 0 -4px 6px rgba(96, 43, 2, 0.429);
+}
+
+footer h1 {
+  margin-bottom: 25px;
+}
+
+footer h4 {
+  font-size: 16px;
+  margin-bottom: 15px;
+}
+
+footer hr {
+  background-color: #fff;
+  width: 65%;
+  margin: 20px 215px;
+}
+
+footer svg {
+  width: 28px;
+  height: 28px;
+  margin: 0 10px;
+  cursor: pointer;
+}
+
+footer svg:hover {
+  transform: scale(1.2);
+  color: #ffd700;
+}
+
+/* === Tambahan untuk tombol + - === */
+
+.jumlah-control {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.jumlah-control button {
+  padding: 6px 12px;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.jumlah-control .minus {
+  background-color: red;
+  color: white;
+}
+
+.jumlah-control .plus {
+  background-color: #2b70ac;
+  color: white;
+}
+
+.jumlah-control span {
+  font-size: 16px;
+  font-weight: bold;
+  width: 20px;
+  text-align: center;
+}
+
+.header-wrapper {
+  padding: 30px 20px;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.header-icon {
+  color: #ffc107;
+  background-color: #ffffff10;
+  padding: 8px;
+  border-radius: 12px;
+}
+
+.header-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.header-subtitle {
+  font-size: 14px;
+  color: #ced4da;
+  margin-top: 4px;
+}
