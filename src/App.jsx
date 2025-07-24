@@ -15,7 +15,7 @@ function App() {
     {
       id: 2,
       name: "Wuling Air EV",
-      price: 2140000000,
+      price: 214000000,
       color: "Silver",
       image:
         "https://imgcdn.oto.com/large/gallery/exterior/110/2615/wuling-ev-front-angle-low-view-266132.jpg?tr=w-510,h-340",

@@ -1,14 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Heart, Info, MessageSquare, ShoppingCart } from "lucide-react";
 
 const Body = ({ Data }) => {
   const [idInfo, setIdInfo] = useState(null);
   const [idKomentar, setIdKomentar] = useState(null);
   const [jumlahKeranjang, setJumlahKeranjang] = useState(0);
+  const [dataCars, setDataCars] = useState(Data);
+  const [sortOption, setSortOption] = useState("");
 
   const awalSuka = {};
   const awalKomentar = {};
-  Data.forEach(cars => {
+  Data.forEach((cars) => {
     awalSuka[cars.id] = false;
     awalKomentar[cars.id] = "";
   });
@@ -57,6 +59,32 @@ const Body = ({ Data }) => {
     setInputKomentar("");
     setIdKomentar(null);
   }
+  const handleChange = (e) => {
+    const keyword = e;
+    const filteredData = Data.filter(
+      (car) =>
+        car.name.toLowerCase().includes(keyword.toLowerCase()) ||
+        car.color.toLowerCase().includes(keyword.toLowerCase()) ||
+        car.price.toString().includes(keyword)
+    );
+    setDataCars(filteredData);
+  };
+  const sortData = (option, data) => {
+    const sorted = [...data];
+    if (option === "name-asc") {
+      sorted.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (option === "name-desc") {
+      sorted.sort((a, b) => b.name.localeCompare(a.name));
+    } else if (option === "price-asc") {
+      sorted.sort((a, b) => a.price - b.price);
+    } else if (option === "price-desc") {
+      sorted.sort((a, b) => b.price - a.price);
+    }
+    return sorted;
+  };
+  useEffect(() => {
+    setDataCars((prev) => sortData(sortOption, prev));
+  }, [sortOption]);
 
   return (
     <>
@@ -71,8 +99,31 @@ const Body = ({ Data }) => {
         <h1>Premium Cars Collection</h1>
         <p>Discover luxury and performance in every drive</p>
 
+        {/* search */}
+        <input
+          type="text"
+          className="search"
+          onChange={(e) => handleChange(e.target.value)}
+        />
+
+        {/* sorting */}
+        <div className="sorting-container">
+          <select
+            onChange={(e) => setSortOption(e.target.value)}
+            className="sort-select"
+          >
+            <option value="" hidden>
+              Sort By
+            </option>
+            <option value="name-asc">Name A-Z</option>
+            <option value="name-desc">Name Z-A</option>
+            <option value="price-asc">Price Low to High</option>
+            <option value="price-desc">Price High to Low</option>
+          </select>
+        </div>
+
         <div className="Card">
-          {Data.map(cars => (
+          {dataCars.map((cars) => (
             <div className="cars" key={cars.id}>
               <div className="suka-icon" onClick={() => suka(cars.id)}>
                 {statusSuka[cars.id] ? (
@@ -97,16 +148,23 @@ const Body = ({ Data }) => {
                 <button className="btn info" onClick={() => setIdInfo(cars.id)}>
                   <Info size={18} /> Info
                 </button>
-                <button className="btn komen" onClick={() => setIdKomentar(cars.id)}>
+                <button
+                  className="btn komen"
+                  onClick={() => setIdKomentar(cars.id)}
+                >
                   <MessageSquare size={18} /> Comment
                 </button>
               </div>
 
               {jumlahMobil[cars.id] ? (
                 <div className="jumlah-control">
-                  <button className="minus" onClick={() => kurangItem(cars.id)}>-</button>
+                  <button className="minus" onClick={() => kurangItem(cars.id)}>
+                    -
+                  </button>
                   <span>{jumlahMobil[cars.id]}</span>
-                  <button className="plus" onClick={() => tambahItem(cars.id)}>+</button>
+                  <button className="plus" onClick={() => tambahItem(cars.id)}>
+                    +
+                  </button>
                 </div>
               ) : (
                 <button className="btn add" onClick={() => tambahItem(cars.id)}>
@@ -121,11 +179,15 @@ const Body = ({ Data }) => {
       {idInfo !== null && (
         <div className="popup" onClick={tutupInfo}>
           <div className="popup-content">
-            {Data.map(cars => {
+            {Data.map((cars) => {
               if (cars.id === idInfo) {
                 return (
                   <div key={cars.id}>
-                    <img src={cars.image} alt={cars.name} className="popup-img" />
+                    <img
+                      src={cars.image}
+                      alt={cars.name}
+                      className="popup-img"
+                    />
                     <h3>{cars.name}</h3>
                     <p>price: Rp {cars.price.toLocaleString()}</p>
                     <p>color: {cars.color}</p>
@@ -142,7 +204,7 @@ const Body = ({ Data }) => {
       {idKomentar !== null && (
         <div className="popup">
           <div className="popup-content">
-            {Data.map(cars => {
+            {Data.map((cars) => {
               if (cars.id === idKomentar) {
                 return (
                   <div key={cars.id}>
