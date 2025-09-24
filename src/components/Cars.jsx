@@ -1,233 +1,415 @@
 import { useState, useEffect } from "react";
-import { Heart, Info, MessageSquare, ShoppingCart } from "lucide-react";
+import { motion as Motion, AnimatePresence } from "framer-motion";
+import {
+  Search,
+  Filter,
+  ArrowUpDown,
+  Heart,
+  MessageSquare,
+  Info,
+  Plus,
+  Minus,
+} from "lucide-react";
 
-const Body = ({ Data }) => {
-  const [idInfo, setIdInfo] = useState(null);
-  const [idKomentar, setIdKomentar] = useState(null);
-  const [jumlahKeranjang, setJumlahKeranjang] = useState(0);
-  const [dataCars, setDataCars] = useState(Data);
-  const [sortOption, setSortOption] = useState("");
+export default function Cars({
+  Data,
+  cart,
+  tambahKeranjang,
+  kurangiKeranjang,
+  darkMode,
+}) {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterColor, setFilterColor] = useState("All");
+  const [sortAsc, setSortAsc] = useState(true);
+  const [likes, setLikes] = useState({});
+  const [comments, setComments] = useState({});
+  const [popupComment, setPopupComment] = useState(null);
+  const [popupDetail, setPopupDetail] = useState(null);
 
-  const awalSuka = {};
-  const awalKomentar = {};
-  Data.forEach((cars) => {
-    awalSuka[cars.id] = false;
-    awalKomentar[cars.id] = "";
-  });
-
-  const [statusSuka, setStatusSuka] = useState(awalSuka);
-  const [komentar, setKomentar] = useState(awalKomentar);
-  const [inputKomentar, setInputKomentar] = useState("");
-  const [jumlahMobil, setJumlahMobil] = useState({});
-
-  function suka(id) {
-    setStatusSuka({ ...statusSuka, [id]: !statusSuka[id] });
-  }
-
-  function tambahItem(id) {
-    const jumlah = jumlahMobil[id] || 0;
-    const newJumlah = jumlah + 1;
-    setJumlahMobil({ ...jumlahMobil, [id]: newJumlah });
-    setJumlahKeranjang(jumlahKeranjang + 1);
-  }
-
-  function kurangItem(id) {
-    const jumlah = jumlahMobil[id] || 0;
-    if (jumlah > 1) {
-      setJumlahMobil({ ...jumlahMobil, [id]: jumlah - 1 });
-      setJumlahKeranjang(jumlahKeranjang - 1);
-    } else if (jumlah === 1) {
-      const newJumlah = { ...jumlahMobil };
-      delete newJumlah[id];
-      setJumlahMobil(newJumlah);
-      setJumlahKeranjang(jumlahKeranjang - 1);
-    }
-  }
-
-  function tutupInfo() {
-    setIdInfo(null);
-  }
-
-  function tutupKomentar() {
-    setIdKomentar(null);
-    setInputKomentar("");
-  }
-
-  function kirimKomentar() {
-    setKomentar({ ...komentar, [idKomentar]: inputKomentar });
-    alert("Komentar terkirim!");
-    setInputKomentar("");
-    setIdKomentar(null);
-  }
-  const handleChange = (e) => {
-    const keyword = e;
-    const filteredData = Data.filter(
-      (car) =>
-        car.name.toLowerCase().includes(keyword.toLowerCase()) ||
-        car.color.toLowerCase().includes(keyword.toLowerCase()) ||
-        car.price.toString().includes(keyword)
-    );
-    setDataCars(filteredData);
-  };
-  const sortData = (option, data) => {
-    const sorted = [...data];
-    if (option === "name-asc") {
-      sorted.sort((a, b) => a.name.localeCompare(b.name));
-    } else if (option === "name-desc") {
-      sorted.sort((a, b) => b.name.localeCompare(a.name));
-    } else if (option === "price-asc") {
-      sorted.sort((a, b) => a.price - b.price);
-    } else if (option === "price-desc") {
-      sorted.sort((a, b) => b.price - a.price);
-    }
-    return sorted;
-  };
   useEffect(() => {
-    setDataCars((prev) => sortData(sortOption, prev));
-  }, [sortOption]);
+    document.body.style.overflow =
+      popupComment !== null || popupDetail !== null ? "hidden" : "auto";
+  }, [popupComment, popupDetail]);
+
+  const filteredCars = Data.filter((car) => {
+    const search = searchTerm.toLowerCase();
+    return (
+      car.name.toLowerCase().includes(search) ||
+      car.color.toLowerCase().includes(search) ||
+      car.price.toString().includes(search)
+    );
+  })
+    .filter((car) => (filterColor === "All" ? true : car.color === filterColor))
+    .sort((a, b) => (sortAsc ? a.price - b.price : b.price - a.price));
+
+  const handleLike = (id) => setLikes((prev) => ({ ...prev, [id]: !prev[id] }));
+  const handleComment = (id, text) => {
+    if (!text.trim()) return;
+    setComments((prev) => ({ ...prev, [id]: [...(prev[id] || []), text] }));
+  };
+
+  const popupVariants = {
+    hidden: { opacity: 0, scale: 0.8 },
+    visible: { opacity: 1, scale: 1 },
+    exit: { opacity: 0, scale: 0.8 },
+  };
 
   return (
-    <>
-      <div className="keranjang">
-        <ShoppingCart size={30} />
-        {jumlahKeranjang > 0 && (
-          <span className="jumlah-keranjang">{jumlahKeranjang}</span>
-        )}
-      </div>
+    <section
+      className={`py-16 px-4 sm:px-6 md:px-10 min-h-screen transition-colors duration-500 ${
+        darkMode
+          ? "bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 text-white"
+          : "bg-yellow-100 text-black"
+      }`}
+    >
+      {/* Title */}
+      <Motion.h2
+        initial={{ y: 40, opacity: 0, scale: 0.8 }}
+        animate={{ y: 0, opacity: 1, scale: 1 }}
+        transition={{
+          type: "spring",
+          stiffness: 120,
+          damping: 12,
+          duration: 0.8,
+        }}
+        className="text-3xl sm:text-4xl font-bold text-center mb-12"
+      >
+        Our Cars Collection
+      </Motion.h2>
 
-      <div className="Container">
-        <h1>Premium Cars Collection</h1>
-        <p>Discover luxury and performance in every drive</p>
-
-        {/* search */}
-        <input
-          type="text"
-          className="search"
-          onChange={(e) => handleChange(e.target.value)}
-        />
-
-        {/* sorting */}
-        <div className="sorting-container">
-          <select
-            onChange={(e) => setSortOption(e.target.value)}
-            className="sort-select"
-          >
-            <option value="" hidden>
-              Sort By
-            </option>
-            <option value="name-asc">Name A-Z</option>
-            <option value="name-desc">Name Z-A</option>
-            <option value="price-asc">Price Low to High</option>
-            <option value="price-desc">Price High to Low</option>
-          </select>
+      {/* Search + Filter + Sort */}
+      <div className="flex flex-col sm:flex-row flex-wrap gap-4 justify-center mb-10">
+        {/* Search */}
+        <div
+          className={`flex items-center rounded-lg px-3 transition-colors duration-500 flex-1 sm:flex-none min-w-[220px] ${
+            darkMode ? "bg-slate-700" : "bg-white"
+          }`}
+        >
+          <Search
+            className={`w-5 h-5 mr-2 ${
+              darkMode ? "text-blue-400" : "text-blue-600"
+            }`}
+          />
+          <input
+            type="text"
+            placeholder="Search cars by name, color, or price..."
+            className={`bg-transparent outline-none py-2 transition-colors duration-500 flex-1 ${
+              darkMode
+                ? "text-white placeholder-gray-400"
+                : "text-black placeholder-gray-500"
+            }`}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
 
-        <div className="Card">
-          {dataCars.map((cars) => (
-            <div className="cars" key={cars.id}>
-              <div className="suka-icon" onClick={() => suka(cars.id)}>
-                {statusSuka[cars.id] ? (
-                  <Heart color="red" fill="red" />
+        {/* Filter */}
+        <div
+          className={`flex items-center rounded-lg px-3 relative transition-colors duration-500 flex-1 sm:flex-none min-w-[160px] ${
+            darkMode ? "bg-slate-700" : "bg-white"
+          }`}
+        >
+          <Filter
+            className={`w-5 h-5 mr-2 ${
+              darkMode ? "text-blue-400" : "text-blue-600"
+            }`}
+          />
+          <select
+            className={`py-2 pr-8 outline-none appearance-none transition-colors duration-500 w-full ${
+              darkMode ? "bg-slate-700 text-white" : "bg-white text-black"
+            }`}
+            value={filterColor}
+            onChange={(e) => setFilterColor(e.target.value)}
+          >
+            <option value="All">All Colors</option>
+            {[...new Set(Data.map((c) => c.color))].map((color) => (
+              <option key={color} value={color}>
+                {color}
+              </option>
+            ))}
+          </select>
+          <div className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-gray-400">
+            ▼
+          </div>
+        </div>
+
+        {/* Sort */}
+        <button
+          onClick={() => setSortAsc(!sortAsc)}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg transition w-full sm:w-auto ${
+            darkMode
+              ? "bg-blue-700 hover:bg-blue-600 text-white"
+              : "bg-blue-600 hover:bg-blue-700 text-white"
+          }`}
+        >
+          <ArrowUpDown className="w-5 h-5" />
+          Sort by Price
+        </button>
+      </div>
+
+      {/* Cars Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
+        {filteredCars.map((car, index) => (
+          <Motion.div
+            key={car.id}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 }}
+            className={`rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl relative transition-colors duration-500 ${
+              darkMode ? "bg-slate-800" : "bg-white"
+            }`}
+          >
+            {/* Heart */}
+            <button
+              onClick={() => handleLike(car.id)}
+              className="absolute top-3 right-3 z-10 transition"
+            >
+              <Heart
+                className={`w-6 h-6 ${
+                  likes[car.id]
+                    ? "fill-red-500 text-red-500"
+                    : darkMode
+                    ? "text-red-400"
+                    : "text-red-500"
+                }`}
+              />
+            </button>
+
+            <Motion.img
+              src={car.image}
+              alt={car.name}
+              className="w-full h-52 object-cover"
+              whileHover={{ scale: 1.05 }}
+            />
+
+            <div className="p-6 space-y-2">
+              <h3
+                className={`text-xl font-semibold truncate ${
+                  darkMode ? "text-white" : "text-black"
+                }`}
+              >
+                {car.name}
+              </h3>
+              <p
+                className={`font-bold ${
+                  darkMode ? "text-blue-400" : "text-blue-600"
+                }`}
+              >
+                Rp {car.price.toLocaleString()}
+              </p>
+              <p
+                className={`${
+                  darkMode ? "text-gray-300" : "text-gray-700"
+                } text-sm`}
+              >
+                Color: {car.color}
+              </p>
+
+              {/* Buttons */}
+              <div className="flex flex-col sm:flex-row w-full items-center justify-between gap-2 mt-3">
+                {(cart[car.id] || 0) === 0 ? (
+                  <button
+                    onClick={() => tambahKeranjang(car)}
+                    className={`w-full sm:w-auto px-4 py-3 rounded-lg transition font-medium flex items-center justify-center gap-2 ${
+                      darkMode
+                        ? "bg-green-600 hover:bg-green-700 text-white"
+                        : "bg-blue-600 hover:bg-blue-700 text-white"
+                    }`}
+                  >
+                    <Plus className="w-5 h-5" /> Add to Cart
+                  </button>
                 ) : (
-                  <Heart />
+                  <div className="flex w-full sm:w-auto items-center justify-between gap-2">
+                    <button
+                      onClick={() => kurangiKeranjang(car)}
+                      className={`px-2 py-2 rounded-lg flex items-center justify-center w-1/3 transition ${
+                        darkMode
+                          ? "bg-red-600 hover:bg-red-700 text-white"
+                          : "bg-red-500 hover:bg-red-600 text-white"
+                      }`}
+                    >
+                      <Minus className="w-5 h-5" />
+                    </button>
+                    <span className="text-lg font-semibold text-center w-1/3">
+                      {cart[car.id]}
+                    </span>
+                    <button
+                      onClick={() => tambahKeranjang(car)}
+                      className={`px-2 py-2 rounded-lg flex items-center justify-center w-1/3 transition ${
+                        darkMode
+                          ? "bg-green-600 hover:bg-green-700 text-white"
+                          : "bg-green-500 hover:bg-green-600 text-white"
+                      }`}
+                    >
+                      <Plus className="w-5 h-5" />
+                    </button>
+                  </div>
                 )}
               </div>
 
-              <img src={cars.image} alt={cars.name} className="gbr-cars" />
-              <h2>{cars.name}</h2>
-              <p>color: {cars.color}</p>
-              <p>price: Rp {cars.price.toLocaleString()}</p>
-
-              {komentar[cars.id] !== "" && (
-                <div className="kotak-komentar">
-                  Last Comment: {komentar[cars.id]}
-                </div>
-              )}
-
-              <div className="btn-card">
-                <button className="btn info" onClick={() => setIdInfo(cars.id)}>
-                  <Info size={18} /> Info
-                </button>
-                <button
-                  className="btn komen"
-                  onClick={() => setIdKomentar(cars.id)}
+              {/* Comment & Detail Icons */}
+              <div className="flex items-center gap-4 mt-4">
+                <div
+                  className="flex items-center gap-2 cursor-pointer"
+                  onClick={() => setPopupComment(car.id)}
                 >
-                  <MessageSquare size={18} /> Comment
-                </button>
+                  <MessageSquare
+                    className={`w-5 h-5 ${
+                      darkMode ? "text-blue-400" : "text-blue-600"
+                    }`}
+                  />
+                  <span
+                    className={`${
+                      darkMode ? "text-gray-300" : "text-gray-700"
+                    } text-sm`}
+                  >
+                    Last Comment
+                  </span>
+                </div>
+
+                <div
+                  className="flex items-center gap-2 cursor-pointer"
+                  onClick={() => setPopupDetail(car.id)}
+                >
+                  <Info
+                    className={`w-5 h-5 ${
+                      darkMode ? "text-green-400" : "text-green-600"
+                    }`}
+                  />
+                  <span
+                    className={`${
+                      darkMode ? "text-gray-300" : "text-gray-700"
+                    } text-sm`}
+                  >
+                    Details
+                  </span>
+                </div>
               </div>
 
-              {jumlahMobil[cars.id] ? (
-                <div className="jumlah-control">
-                  <button className="minus" onClick={() => kurangItem(cars.id)}>
-                    -
-                  </button>
-                  <span>{jumlahMobil[cars.id]}</span>
-                  <button className="plus" onClick={() => tambahItem(cars.id)}>
-                    +
-                  </button>
-                </div>
-              ) : (
-                <button className="btn add" onClick={() => tambahItem(cars.id)}>
-                  <ShoppingCart size={18} /> Add to Cart
-                </button>
-              )}
+              {/* Last comment */}
+              <ul
+                className={`space-y-1 text-sm mt-2 max-h-24 overflow-y-auto transition-colors duration-500 ${
+                  darkMode ? "text-gray-300" : "text-gray-800"
+                }`}
+              >
+                {(comments[car.id] || []).slice(-1).map((c, i) => (
+                  <li
+                    key={i}
+                    className={`px-3 py-1 rounded truncate cursor-pointer transition-colors duration-500 ${
+                      darkMode
+                        ? "bg-slate-700 hover:bg-slate-600"
+                        : "bg-gray-200 hover:bg-gray-300"
+                    }`}
+                    title={c}
+                  >
+                    {c}
+                  </li>
+                ))}
+              </ul>
             </div>
-          ))}
-        </div>
+          </Motion.div>
+        ))}
       </div>
 
-      {idInfo !== null && (
-        <div className="popup" onClick={tutupInfo}>
-          <div className="popup-content">
-            {Data.map((cars) => {
-              if (cars.id === idInfo) {
-                return (
-                  <div key={cars.id}>
-                    <img
-                      src={cars.image}
-                      alt={cars.name}
-                      className="popup-img"
-                    />
-                    <h3>{cars.name}</h3>
-                    <p>price: Rp {cars.price.toLocaleString()}</p>
-                    <p>color: {cars.color}</p>
-                    <button onClick={tutupInfo}>Close</button>
-                  </div>
-                );
-              }
-              return null;
-            })}
-          </div>
-        </div>
-      )}
+      {/* Pop-ups (Comment & Detail) */}
+      <AnimatePresence>
+        {popupComment !== null && (
+          <Motion.div
+            className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            variants={popupVariants}
+            transition={{ duration: 0.25 }}
+          >
+            <Motion.div
+              className={`p-6 rounded-2xl w-full max-w-md shadow-xl transition-colors duration-500 ${
+                darkMode ? "bg-slate-800 text-white" : "bg-white text-black"
+              }`}
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -20, opacity: 0 }}
+              transition={{ duration: 0.25 }}
+            >
+              <h3 className="text-xl font-semibold mb-4">Add Comment</h3>
+              <ul className="max-h-40 overflow-y-auto mb-4 space-y-2">
+                {(comments[popupComment] || []).map((c, i) => (
+                  <li key={i} className="px-3 py-1 rounded truncate">
+                    {c}
+                  </li>
+                ))}
+              </ul>
+              <input
+                type="text"
+                className={`w-full p-3 rounded-lg placeholder-gray-500 focus:outline-none transition-colors duration-500 ${
+                  darkMode
+                    ? "bg-slate-700 text-white"
+                    : "bg-gray-100 text-black"
+                }`}
+                placeholder="Type your comment..."
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && e.target.value.trim() !== "") {
+                    handleComment(popupComment, e.target.value);
+                    e.target.value = "";
+                  }
+                }}
+              />
+              <button
+                onClick={() => setPopupComment(null)}
+                className="mt-4 w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition"
+              >
+                Close
+              </button>
+            </Motion.div>
+          </Motion.div>
+        )}
 
-      {idKomentar !== null && (
-        <div className="popup">
-          <div className="popup-content">
-            {Data.map((cars) => {
-              if (cars.id === idKomentar) {
-                return (
-                  <div key={cars.id}>
-                    <h3>Komentar untuk {cars.name}</h3>
-                    <textarea
-                      placeholder="Tulis komentarmu di sini..."
-                      value={inputKomentar}
-                      onChange={(e) => setInputKomentar(e.target.value)}
-                    ></textarea>
-                    <div className="btn-popup-komen">
-                      <button onClick={tutupKomentar}>Cancel</button>
-                      <button onClick={kirimKomentar}>Submit</button>
-                    </div>
-                  </div>
-                );
-              }
-              return null;
-            })}
-          </div>
-        </div>
-      )}
-    </>
+        {popupDetail !== null && (
+          <Motion.div
+            className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            variants={popupVariants}
+            transition={{ duration: 0.25 }}
+          >
+            <Motion.div
+              className={`p-6 rounded-2xl w-full max-w-md shadow-xl transition-colors duration-500 ${
+                darkMode ? "bg-slate-800 text-white" : "bg-white text-black"
+              }`}
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -20, opacity: 0 }}
+              transition={{ duration: 0.25 }}
+            >
+              <h3 className="text-xl font-semibold mb-4">Car Details</h3>
+              <p className="mb-2">
+                <span className="font-semibold">Name:</span>{" "}
+                {Data.find((c) => c.id === popupDetail).name}
+              </p>
+              <p className="mb-2">
+                <span className="font-semibold">Color:</span>{" "}
+                {Data.find((c) => c.id === popupDetail).color}
+              </p>
+              <p className="mb-2">
+                <span className="font-semibold">Price:</span> Rp{" "}
+                {Data.find((c) => c.id === popupDetail).price.toLocaleString()}
+              </p>
+              <img
+                src={Data.find((c) => c.id === popupDetail).image}
+                alt="car detail"
+                className="w-full h-40 object-cover rounded-lg mt-2"
+              />
+              <button
+                onClick={() => setPopupDetail(null)}
+                className="mt-4 w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition"
+              >
+                Close
+              </button>
+            </Motion.div>
+          </Motion.div>
+        )}
+      </AnimatePresence>
+    </section>
   );
-};
-
-export default Body;
+}
