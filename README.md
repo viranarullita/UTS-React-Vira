@@ -1,12 +1,31 @@
-# React + Vite
+# Cars Collection
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Cars Collection adalah aplikasi web untuk menjelajahi koleksi mobil dengan tampilan interaktif, pencarian, filter, komentar, serta keranjang belanja.
 
-Currently, two official plugins are available:
+**Live Demo:** https://cars-collection-vira.vercel.app/
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## Fitur
+- Menampilkan daftar koleksi mobil dengan gambar dan nama  
+- Pencarian mobil berdasarkan nama  
+- Filter mobil dengan dropdown kategori  
+- Sorting koleksi (ascending / descending)  
+- Detail mobil dalam pop-up (gambar, deskripsi, informasi tambahan)  
+- Fitur komentar pada setiap mobil  
+- Tombol suka (like) di pojok kanan atas gambar  
+- Tombol tambah/kurang untuk keranjang belanja  
+- Keranjang interaktif di header dengan jumlah item  
+- Dukungan **Dark / Light Mode**  
+- Desain **responsif** untuk mobile, tablet, dan desktop  
+- Animasi halus menggunakan **Framer Motion**  
+- Ikon dari **Lucide React**
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project..
+---
+
+## Teknologi
+- React.js  
+- Tailwind CSS  
+- Framer Motion  
+- Lucide React  
+- pnpm (package manager)
